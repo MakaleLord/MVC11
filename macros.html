@@ -1,1 +1,37 @@
+{% macro get_image(tags) %}
+   <img src="https://source.unsplash.com/1600x900/?{{tags}}">
+{% endmacro %}
 
+{% macro blog_post(post, show_content) %}
+    <div class="blog-post">
+        {% if show_content %}
+            <a href="{{url_for('home_page')}}" class="back-link">Go back</a>
+            <h1 class="post-title">{{post.title}}</h1>
+            <p class="date">Posted on {{post.published_on.strftime("%w %B")}}</p>
+        {% else %}
+            {{ get_image(post.tags) }}
+            <a href="{{url_for('post_page', post_link=post.permalink)}}">
+                <h1 class="post-title">{{post.title}}</h1>
+            </a>
+        {% endif %}
+        
+        <p class="post-meta">Written by {{post.author}}</p>
+        
+        {% if show_content %}
+            {% autoescape false %}
+                <p class="post-content">{{post.content}}</p>
+            {% endautoescape %}
+
+            {% for tag in post.tags.split(',') %}
+                <span class="badge rounded-pill bg-info text-dark">{{tag}}</span>
+            {% endfor %}
+        {% endif %}
+
+        {% if session.get('logged_in') %}
+          <div class="mt-4">
+            <a class="btn btn-warning" href="{{url_for('editor', post_link=post.permalink)}}">Edit</a>
+            <a class="btn btn-dark" href="{{url_for('delete_post_page', post_id=post.PostId)}}">Delete</a>
+          </div>
+        {% endif %}
+    </div>
+{% endmacro %}
